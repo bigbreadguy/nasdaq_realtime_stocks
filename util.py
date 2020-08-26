@@ -54,7 +54,9 @@ class time_series():
         self.pm8 = self.today + np.timedelta64(20, 'h')
         self.data.index.names = ["Date"]
         self.data.rename(columns=columns, inplace=True)
-        self.data = self.data[self.data.index.values >= self.am8]
+        today_data = self.data[self.data.index.values >= self.am8]
+        if not len(today_data)==0:
+            self.data = today_data
 
     def now(self):
         return datetime.strptime(str(datetime.now(self.tz)), '%Y-%m-%d %H:%M:%S.%f-04:00')
