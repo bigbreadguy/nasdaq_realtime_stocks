@@ -44,8 +44,6 @@ class time_series():
         self.data, self.meta_data = self.ts.get_intraday(symbol=self.ticker, interval=self.interval,
                                                          outputsize=self.output_size)
         columns = {"1. open":"Open", "2. high":"High", "3. low":"Low", "4. close":"Close", "5. volume":"Volume"}
-        self.data.index.names = ["Date"]
-        self.data.rename(columns=columns, inplace=True)
         self.tz = pytz.timezone("America/New_York")
         now = self.now()
         self.init_time = np.datetime64(now)
@@ -54,6 +52,9 @@ class time_series():
         self.op = self.today + np.timedelta64(9, 'h') + np.timedelta64(30, 'm')
         self.cl = self.today + np.timedelta64(16, 'h')
         self.pm8 = self.today + np.timedelta64(20, 'h')
+        self.data.index.names = ["Date"]
+        self.data.rename(columns=columns, inplace=True)
+        self.data = self.data[self.data.index.values >= self.am8]
 
     def now(self):
         return datetime.strptime(str(datetime.now(self.tz)), '%Y-%m-%d %H:%M:%S.%f-04:00')
