@@ -5,20 +5,26 @@
 **Clone the repository
 """
 $git clone https://github.com/bigbreadguy/nasdaq_realtime_stocks.git
-"""
+"""<br/>
 or github desktop and other methods also works
 
 **Install all requirements
 """
 $conda install -c anaconda numpy pandas matplotlib
-$conda install -c conda-forge easydict
-$pip install alpha_vantage
-$pip install --upgrade mplfinance
+"""<br/>
 """
+$conda install -c conda-forge easydict
+"""<br/>
+"""
+$pip install alpha_vantage
+"""<br/>
+"""
+$pip install --upgrade mplfinance
+"""<br/>
 
 # Usage
-KEY : alphavantage API key, get the key from here https://www.alphavantage.co/support/#api-key
-TICKER : symbol that represents target stock (ex: AAPL for Apple Inc. Common Stock)
+KEY : alphavantage API key, get the key from here https://www.alphavantage.co/support/#api-key<br/>
+TICKER : symbol that represents target stock (ex: AAPL for Apple Inc. Common Stock)<br/>
 
 **Run main.py
 """
