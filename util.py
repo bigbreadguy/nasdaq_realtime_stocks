@@ -47,13 +47,19 @@ class time_series():
         self.data.index.names = ["Date"]
         self.data.rename(columns=columns, inplace=True)
         self.tz = pytz.timezone("America/New_York")
-        now = datetime.strptime(str(datetime.now(self.tz)), '%Y-%m-%d %H:%M:%S.%f-04:00')
+        now = self.now()
         self.init_time = np.datetime64(now)
-        self.today = self.init_time.astype('datetime64[D]')
+        self.today = self.date(self.init_time)
         self.am8 = self.today + np.timedelta64(8, 'h')
         self.op = self.today + np.timedelta64(9, 'h') + np.timedelta64(30, 'm')
         self.cl = self.today + np.timedelta64(16, 'h')
         self.pm8 = self.today + np.timedelta64(20, 'h')
+
+    def now(self):
+        return datetime.strptime(str(datetime.now(self.tz)), '%Y-%m-%d %H:%M:%S.%f-04:00')
+
+    def date(self, time : np.datetime64):
+        return time.astype('datetime64[D]')
 
     def update(self):
         data, _ = self.ts.get_intraday(symbol=self.ticker, interval=self.interval,
@@ -61,7 +67,6 @@ class time_series():
         self.data = data.combine_first(self.data)
         del data, _
         
-
     def plot(self):
         if self.style == "close_only":
             self._close_only()
