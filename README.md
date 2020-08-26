@@ -2,13 +2,13 @@
  Get real-time nasdaq stocks data via alphavantage API
 
 # Installation
-** Clone the repository **
+**Clone the repository**
 ```
     $git clone https://github.com/bigbreadguy/nasdaq_realtime_stocks.git
 ```
 or github desktop and other methods also works
 
-** Install all requirements **
+**Install all requirements**
 ```
     $conda install -c anaconda numpy pandas matplotlib
     $conda install -c conda-forge easydict
@@ -20,7 +20,7 @@ or github desktop and other methods also works
  KEY : alphavantage API key, get the key from here https://www.alphavantage.co/support/#api-key<br/>
  TICKER : symbol that represents target stock (ex: AAPL for Apple Inc. Common Stock)<br/>
 
-** Run main.py **
+**Run main.py**
 ```
     python main.py [-k, --key KEY] [-t, --ticker TICKER]
                 [-s, --style {candle,close_only}]
@@ -30,5 +30,5 @@ or github desktop and other methods also works
 
 OR
 
-** Open realtime_display.ipynb **
+**Open realtime_display.ipynb**
  Input proper values into the easydict object and run
