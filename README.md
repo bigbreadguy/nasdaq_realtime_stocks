@@ -30,5 +30,5 @@ or github desktop and other methods also works
 
 OR
 
-**Open realtime_display.ipynb**
+**Open realtime_display.ipynb**<br/>
  Input proper values into the easydict object and run
