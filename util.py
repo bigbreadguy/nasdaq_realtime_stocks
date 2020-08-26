@@ -67,7 +67,9 @@ class time_series():
     def update(self):
         data, _ = self.ts.get_intraday(symbol=self.ticker, interval=self.interval,
                                        outputsize="compact")
-        self.data = data.combine_first(self.data)
+        data = data[data.index.values >= self.am8]
+        if not len(data)==0:
+            self.data = data.combine_first(self.data)
         del data, _
         
     def plot(self):
