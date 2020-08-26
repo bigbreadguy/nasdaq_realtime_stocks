@@ -80,7 +80,7 @@ class time_series():
                            volume='in',
                            ohlc='i')
         s  = mpf.make_mpf_style(marketcolors=mc)
-        kwargs = dict(type='candle',volume=True,figratio=(11,8),figscale=2)
+        kwargs = dict(type='candle',volume=True,figratio=(11,8),figscale=1)
         mpf.plot(self.data.iloc[::-1],**kwargs, style=s)
     
     def _close_only(self):
