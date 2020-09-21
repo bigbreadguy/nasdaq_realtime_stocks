@@ -8,12 +8,15 @@ import pytz # Python TimeZone
 import argparse
 import matplotlib.pyplot as plt
 import mplfinance as mpf # matplotlib finance, $pip install --upgrade mplfinance
+import yfinance as yf
 
 #%% ArgumentParser
 class opts():
     def __init__(self):
         self.parser = argparse.ArgumentParser(description="alpha_vantage",
                                         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+        self.parser.add_argument("-m", "--mode", default="check", type=str, choices=["check", "plot"],
+                                 dest="mode")
         self.parser.add_argument("-k", "--key", default="", type=str, dest="key")
         self.parser.add_argument("-t", "--ticker", default="", type=str, dest="ticker")
         self.parser.add_argument("-s", "--style", default="close_only", choices=["candle", "close_only"],
@@ -93,3 +96,47 @@ class time_series():
         plt.title('Intraday Times Series for the {ticker} stock ({interval})'.format(
             ticker=self.ticker, interval=self.interval))
         plt.show()
+
+class checkStrategy():
+    def __init__(self, opts, ticker : str, profit : float = 0.5, period : int = 21):
+        super(checkStrategy, self).__init__()
+        self.ticker = ticker
+        self.profit = profit
+        self.period = np.timedelta64(period, "D")
+        self.ts = TimeSeries(key=opts.key, output_format='pandas')
+        self.data, self.meta_data = self.ts.get_intraday(symbol=self.ticker, interval="60min",
+                                                         outputsize="full")
+        columns = {"1. open":"Open", "2. high":"High", "3. low":"Low", "4. close":"Close", "5. volume":"Volume"}
+        self.data.rename(columns=columns, inplace=True)
+        self.enter_price = self.data.iloc[-1, 2]
+        self.exit_price = self.enter_price
+        self.interval = period
+        self.ratio = profit
+
+    def date(self, time):
+        return np.datetime64(time).astype('datetime64[D]')
+
+    def compute(self):
+        enter_date = self.data.index[-1]
+        enter_date = self.date(enter_date)
+
+        exit_date = enter_date + np.timedelta64(21, 'D')
+        exit_date_tomorrow = exit_date + np.timedelta64(1, "D")
+        tmp = self.data[self.data.index >= exit_date]
+        result = tmp[tmp.index < exit_date_tomorrow]
+        self.exit_price = result["High"].argmax()
+        self.interval = np.timedelta64(21, "D")
+
+        over_profit = self.data[self.data["High"] >= self.enter_price * (1 + self.profit)]
+
+        if not len(over_profit) == 0:
+            self.exit_price = over_profit.iloc[-1, 1]
+            self.revenue = self.exit_price - self.enter_price
+            exit_date = over_profit.index[-1]
+            exit_date = self.date(exit_date)
+            self.interval = exit_date - enter_date
+
+        self.ratio = (self.exit_price - self.enter_price) / self.enter_price
+
+        return self.ratio, self.interval
+
