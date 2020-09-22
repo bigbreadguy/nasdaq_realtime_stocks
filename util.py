@@ -140,3 +140,46 @@ class checkStrategy():
 
         return self.ratio, self.interval
 
+class statYahoo():
+    def __init__(self, ticker : str, profit : float = 0.5, period : int = 21):
+        super(statYahoo, self).__init__()
+        self.ticker = yf.Ticker(ticker)
+        self.profit = profit
+        self.period = np.timedelta64(period, "D")
+        self.data = self.ticker.history(period="max")
+        self.enter_price = self.data.iloc[0, 2]
+        self.exit_price = self.enter_price
+        self.interval = np.timedelta64(period, "D")
+
+    def date(self, time):
+        return np.datetime64(time).astype('datetime64[D]')
+
+    def ratio(self):
+        return (self.exit_price - self.enter_price) / self.enter_price
+
+    def compute(self):
+        enter_date = self.date(self.data.index[0])
+        exit_date = enter_date + self.period
+        result = self.data[self.data.index == exit_date]
+        try:
+            self.exit_price = result["High"].values[0]
+        except:
+            result = self.data[self.data.index == exit_date + np.timedelta64(1, "D")]
+            self.exit_price = result["High"].values[0]
+        self.interval = self.period
+
+        over_profit = self.data[self.data["High"] >= self.enter_price * (1 + self.profit)]
+
+        if not len(over_profit) == 0:
+            date_over_profit = over_profit.index[0]
+            if date_over_profit <= exit_date:            
+                self.exit_price = over_profit.iloc[0, 1]
+                self.revenue = self.exit_price - self.enter_price
+                exit_date = over_profit.index[0]
+                exit_date = self.date(exit_date)
+                self.interval = exit_date - enter_date
+
+        print("enter : $" + str(self.enter_price) + ", " + str(enter_date))
+        print("exit : $" + str(self.exit_price) + ", " + str(exit_date))
+        
+        return self.ratio(), self.interval
